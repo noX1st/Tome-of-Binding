@@ -55,33 +55,7 @@ public class PlayerListRequestMessage {
                     ));
                 }
             }
-
-            if (msg.includeOffline) {
-                String worldId = sender.getServer().getWorldPath(LevelResource.ROOT).getFileName().toString();
-                for (String entry : ModConfig.getPlayerHistory(worldId)) {
-                    try {
-                        String[] allParts = entry.split(":");
-                        if (allParts.length >= 6) {
-                            String uuid = allParts[0];
-                            if (serverPlayers.stream().noneMatch(p -> p.getStringUUID().equals(uuid))) {
-                                String name = allParts[1];
-                                String xStr = allParts[allParts.length - 3];
-                                String yStr = allParts[allParts.length - 2];
-                                String zStr = allParts[allParts.length - 1];
-                                String dimension = String.join(":", Arrays.copyOfRange(allParts, 2, allParts.length - 3));
-
-                                double x = Double.parseDouble(xStr);
-                                double y = Double.parseDouble(yStr);
-                                double z = Double.parseDouble(zStr);
-                                playerList.add(new PlayerData(name, dimension, -1, uuid, false, x, y, z));
-                            }
-                        }
-                    } catch (Exception e) {
-                        LOGGER.warn("Failed to parse player history entry: {}", entry, e);
-                    }
-                }
-            }
-
+            
             Tome.INSTANCE.send(PacketDistributor.PLAYER.with(() -> sender), new PlayerListResponseMessage(playerList));
         });
         context.setPacketHandled(true);

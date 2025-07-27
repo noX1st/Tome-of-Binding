@@ -27,5 +27,16 @@
   "gui.tome.show_player_dimension": "Show player dimension",
   "gui.tome.my_info": "My info",
   "gui.tome.share_my_coordinates": "Share my coordinates",
-  "gui.tome.share_my_dimension": "Share my dimension"
+  "gui.tome.share_my_dimension": "Share my dimension",
+  "gui.tome.tooltip.show_search": "Show search bar",
+  "gui.tome.tooltip.hide_search": "Hide search bar",
+  "gui.tome.tooltip.show_coords": "Show players coordinates",
+  "gui.tome.tooltip.hide_coords": "Hide players coordinates",
+  "gui.tome.tooltip.show_offline": "Show offline players",
+  "gui.tome.tooltip.hide_offline": "Hide offline players",
+  "gui.tome.tooltip.light_theme": "Enable light theme",
+  "gui.tome.tooltip.dark_theme": "Enable dark theme",
+  "gui.tome.tooltip.pin_player": "Pin player",
+  "gui.tome.tooltip.unpin_player": "Unpin player",
+  "gui.tome.tooltip.player_settings": "Player settings"
 }
