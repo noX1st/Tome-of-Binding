@@ -73,11 +73,11 @@ public class PlayerSelectPacket {
                 }
 
                 if (itemInHand == Tome.SCROLL_OF_VISION.get()) {
-                    sender.getCooldowns().addCooldown(itemInHand, 600);
+                    sender.getCooldowns().addCooldown(itemInHand, 300);
                     if (mainHandItem.getItem() == itemInHand) mainHandItem.shrink(1);
                     else offHandItem.shrink(1);
                 } else if (itemInHand == Tome.TOME.get()) {
-                    sender.getCooldowns().addCooldown(itemInHand, 400);
+                    sender.getCooldowns().addCooldown(itemInHand, 100);
                 }
             }
         });

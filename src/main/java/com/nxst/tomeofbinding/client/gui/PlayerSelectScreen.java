@@ -85,6 +85,7 @@ public class PlayerSelectScreen extends Screen {
         this.searchBox.setResponder(this::onSearchQueryChanged);
         this.addRenderableWidget(this.searchBox);
         rebuildGui();
+        Tome.INSTANCE.sendToServer(new PlayerListRequestMessage(showOfflinePlayers));
     }
 
     @Override
@@ -276,14 +277,21 @@ public class PlayerSelectScreen extends Screen {
         int controlButtonsX = guiLeft + 8;
         int controlButtonsY = controlButtonsStartY;
 
-        this.addRenderableWidget(new ThemedButton(controlButtonsX, controlButtonsY, CONTROL_BUTTON_SIZE, CONTROL_BUTTON_SIZE, Component.literal("🔍"), (b) -> { isSearchVisible = !isSearchVisible; if (!isSearchVisible) onSearchQueryChanged(""); rebuildGui(); }, DARK_BUTTON_TEXTURE, LIGHT_BUTTON_TEXTURE, isDarkTheme, true, isSearchVisible));
+        Component searchTooltip = isSearchVisible ? Component.translatable("gui.tome.tooltip.hide_search") : Component.translatable("gui.tome.tooltip.show_search");
+        this.addRenderableWidget(new ThemedButton(controlButtonsX, controlButtonsY, CONTROL_BUTTON_SIZE, CONTROL_BUTTON_SIZE, Component.literal("🔍"), (b) -> { isSearchVisible = !isSearchVisible; if (!isSearchVisible) onSearchQueryChanged(""); rebuildGui(); }, DARK_BUTTON_TEXTURE, LIGHT_BUTTON_TEXTURE, isDarkTheme, true, isSearchVisible, searchTooltip));
         controlButtonsY += CONTROL_BUTTON_SIZE + CONTROL_BUTTON_GAP;
-        this.addRenderableWidget(new ThemedButton(controlButtonsX, controlButtonsY, CONTROL_BUTTON_SIZE, CONTROL_BUTTON_SIZE, Component.literal("📍"), (b) -> { showPlayerCoordinates = !showPlayerCoordinates; ModConfig.setShowPlayerCoordinates(showPlayerCoordinates); ModConfig.saveConfig(); rebuildGui(); }, DARK_BUTTON_TEXTURE, LIGHT_BUTTON_TEXTURE, isDarkTheme, true, showPlayerCoordinates));
+
+        Component coordsTooltip = showPlayerCoordinates ? Component.translatable("gui.tome.tooltip.hide_coords") : Component.translatable("gui.tome.tooltip.show_coords");
+        this.addRenderableWidget(new ThemedButton(controlButtonsX, controlButtonsY, CONTROL_BUTTON_SIZE, CONTROL_BUTTON_SIZE, Component.literal("📍"), (b) -> { showPlayerCoordinates = !showPlayerCoordinates; ModConfig.setShowPlayerCoordinates(showPlayerCoordinates); ModConfig.saveConfig(); rebuildGui(); }, DARK_BUTTON_TEXTURE, LIGHT_BUTTON_TEXTURE, isDarkTheme, true, showPlayerCoordinates, coordsTooltip));
         controlButtonsY += CONTROL_BUTTON_SIZE + CONTROL_BUTTON_GAP;
-        this.addRenderableWidget(new ThemedButton(controlButtonsX, controlButtonsY, CONTROL_BUTTON_SIZE, CONTROL_BUTTON_SIZE, Component.literal("👥"), (b) -> { showOfflinePlayers = !showOfflinePlayers; ModConfig.setShowOfflinePlayers(showOfflinePlayers); ModConfig.saveConfig(); rebuildGui(); }, DARK_BUTTON_TEXTURE, LIGHT_BUTTON_TEXTURE, isDarkTheme, true, showOfflinePlayers));
+
+        Component offlineTooltip = showOfflinePlayers ? Component.translatable("gui.tome.tooltip.hide_offline") : Component.translatable("gui.tome.tooltip.show_offline");
+        this.addRenderableWidget(new ThemedButton(controlButtonsX, controlButtonsY, CONTROL_BUTTON_SIZE, CONTROL_BUTTON_SIZE, Component.literal("👥"), (b) -> { showOfflinePlayers = !showOfflinePlayers; ModConfig.setShowOfflinePlayers(showOfflinePlayers); ModConfig.saveConfig(); rebuildGui(); }, DARK_BUTTON_TEXTURE, LIGHT_BUTTON_TEXTURE, isDarkTheme, true, showOfflinePlayers, offlineTooltip));
         controlButtonsY += CONTROL_BUTTON_SIZE + CONTROL_BUTTON_GAP;
+
         Component themeButtonText = isDarkTheme ? Component.literal("☼") : Component.literal("☾");
-        this.addRenderableWidget(new ThemedButton(controlButtonsX, controlButtonsY, CONTROL_BUTTON_SIZE, CONTROL_BUTTON_SIZE, themeButtonText, (b) -> { isDarkTheme = !isDarkTheme; ModConfig.setDarkTheme(isDarkTheme); ModConfig.saveConfig(); rebuildGui(); }, DARK_BUTTON_TEXTURE, LIGHT_BUTTON_TEXTURE, isDarkTheme, true, false));
+        Component themeTooltip = isDarkTheme ? Component.translatable("gui.tome.tooltip.light_theme") : Component.translatable("gui.tome.tooltip.dark_theme");
+        this.addRenderableWidget(new ThemedButton(controlButtonsX, controlButtonsY, CONTROL_BUTTON_SIZE, CONTROL_BUTTON_SIZE, themeButtonText, (b) -> { isDarkTheme = !isDarkTheme; ModConfig.setDarkTheme(isDarkTheme); ModConfig.saveConfig(); rebuildGui(); }, DARK_BUTTON_TEXTURE, LIGHT_BUTTON_TEXTURE, isDarkTheme, true, false, themeTooltip));
 
         if (!filteredPlayerDataList.isEmpty()) {
             int playersPerPage = getPlayersPerPage();
@@ -337,9 +345,12 @@ public class PlayerSelectScreen extends Screen {
                 int playerControlButtonsX = buttonX + this.currentButtonWidth + HORIZONTAL_BUTTON_GAP;
                 int playerControlButtonsY = buttonY + (buttonHeight - (2 * CONTROL_BUTTON_SIZE + CONTROL_BUTTON_GAP)) / 2;
 
-                this.addRenderableWidget(new ThemedButton(playerControlButtonsX, playerControlButtonsY, CONTROL_BUTTON_SIZE, CONTROL_BUTTON_SIZE, Component.literal("📌"), (b) -> togglePinPlayer(playerData), DARK_BUTTON_TEXTURE, LIGHT_BUTTON_TEXTURE, isDarkTheme, true, pinnedPlayers.contains(playerData.getPlayerUUID())));
+                Component pinTooltip = pinnedPlayers.contains(playerData.getPlayerUUID()) ? Component.translatable("gui.tome.tooltip.unpin_player") : Component.translatable("gui.tome.tooltip.pin_player");
+                this.addRenderableWidget(new ThemedButton(playerControlButtonsX, playerControlButtonsY, CONTROL_BUTTON_SIZE, CONTROL_BUTTON_SIZE, Component.literal("📌"), (b) -> togglePinPlayer(playerData), DARK_BUTTON_TEXTURE, LIGHT_BUTTON_TEXTURE, isDarkTheme, true, pinnedPlayers.contains(playerData.getPlayerUUID()), pinTooltip));
                 playerControlButtonsY += CONTROL_BUTTON_SIZE + CONTROL_BUTTON_GAP;
-                this.addRenderableWidget(new ThemedButton(playerControlButtonsX, playerControlButtonsY, CONTROL_BUTTON_SIZE, CONTROL_BUTTON_SIZE, Component.literal("⚙"), (b) -> Minecraft.getInstance().setScreen(new PlayerSettingsScreen(playerData, this)), DARK_BUTTON_TEXTURE, LIGHT_BUTTON_TEXTURE, isDarkTheme, true, false));
+
+                Component settingsTooltip = Component.translatable("gui.tome.tooltip.player_settings");
+                this.addRenderableWidget(new ThemedButton(playerControlButtonsX, playerControlButtonsY, CONTROL_BUTTON_SIZE, CONTROL_BUTTON_SIZE, Component.literal("⚙"), (b) -> Minecraft.getInstance().setScreen(new PlayerSettingsScreen(playerData, this)), DARK_BUTTON_TEXTURE, LIGHT_BUTTON_TEXTURE, isDarkTheme, true, false, settingsTooltip));
 
                 if (i == endIndex - 1) {
                     lastY = buttonY + buttonHeight;
@@ -407,7 +418,7 @@ public class PlayerSelectScreen extends Screen {
             this.searchBox.setFocused(false);
             return true;
         }
-        if (keyCode == 256 || (this.minecraft != null && this.minecraft.options.keyInventory.matches(keyCode, scanCode))) {
+        if (keyCode == 256) {
             this.onClose();
             return true;
         }

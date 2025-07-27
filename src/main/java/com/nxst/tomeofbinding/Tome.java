@@ -8,6 +8,11 @@ import com.nxst.tomeofbinding.network.PlayerSelectPacket;
 import com.nxst.tomeofbinding.network.TeleportToLastLocationPacket;
 import com.nxst.tomeofbinding.network.data.PlayerListRequestMessage;
 import com.nxst.tomeofbinding.network.data.PlayerListResponseMessage;
+import com.nxst.tomeofbinding.network.RequestWorldIdPacket;
+import com.nxst.tomeofbinding.network.RespondWorldIdPacket;
+import net.minecraftforge.event.entity.EntityJoinLevelEvent;
+import net.minecraft.client.player.LocalPlayer;
+import net.minecraftforge.network.PacketDistributor;
 import net.minecraft.client.Minecraft;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Player;
@@ -67,6 +72,8 @@ public class Tome {
             INSTANCE.registerMessage(packetId++, PlayerListResponseMessage.class, PlayerListResponseMessage::encode, PlayerListResponseMessage::decode, PlayerListResponseMessage::handle);
             INSTANCE.registerMessage(packetId++, PlayerSelectPacket.class, PlayerSelectPacket::encode, PlayerSelectPacket::decode, PlayerSelectPacket::handle);
             INSTANCE.registerMessage(packetId++, TeleportToLastLocationPacket.class, TeleportToLastLocationPacket::encode, TeleportToLastLocationPacket::decode, TeleportToLastLocationPacket::handle);
+            INSTANCE.registerMessage(packetId++, RequestWorldIdPacket.class, RequestWorldIdPacket::encode, RequestWorldIdPacket::decode, RequestWorldIdPacket::handle);
+            INSTANCE.registerMessage(packetId++, RespondWorldIdPacket.class, RespondWorldIdPacket::encode, RespondWorldIdPacket::decode, RespondWorldIdPacket::handle);
         });
     }
 
@@ -91,6 +98,7 @@ public class Tome {
 
     @Mod.EventBusSubscriber(modid = MODID, bus = Mod.EventBusSubscriber.Bus.FORGE, value = Dist.CLIENT)
     public static class ClientEvents {
+        private static boolean worldIdRequested = false;
         private static int tickCounter = 0;
 
         @SubscribeEvent
@@ -113,6 +121,25 @@ public class Tome {
                         }
                     }
                 }
+            }
+        }
+        @SubscribeEvent
+        public static void onEntityJoinLevel(EntityJoinLevelEvent event) {
+            if (event.getLevel().isClientSide && event.getEntity() instanceof LocalPlayer) {
+                //flag
+                worldIdRequested = false;
+
+                new Thread(() -> {
+                    try {
+                        Thread.sleep(2000);
+                        if (!worldIdRequested) {
+                            Tome.INSTANCE.send(PacketDistributor.SERVER.noArg(), new RequestWorldIdPacket());
+                            worldIdRequested = true;
+                        }
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }).start();
             }
         }
     }

@@ -104,20 +104,16 @@ public class PlayerButton extends Button {
 
             if (showDimension) {
                 int dimensionColor;
-                if (!isDarkTheme) {
-                    dimensionColor = 0xFFFFFFFF;
+                if (!isOnline) {
+                    dimensionColor = 0xFFCCCCCC;
                 } else {
-                    if (!isOnline) {
-                        dimensionColor = 0xFFCCCCCC;
-                    } else {
-                        String[] dimParts = playerDimension.split(":");
-                        String dimPath = dimParts.length > 1 ? dimParts[1] : playerDimension;
-                        switch (dimPath) {
-                            case "overworld": dimensionColor = 0xFF55FF55; break;
-                            case "the_nether": dimensionColor = 0xFFFF5555; break;
-                            case "the_end": dimensionColor = 0xFFFF55FF; break;
-                            default: dimensionColor = 0xA0A0A0; break;
-                        }
+                    String[] dimParts = playerDimension.split(":");
+                    String dimPath = dimParts.length > 1 ? dimParts[1] : playerDimension;
+                    switch (dimPath) {
+                        case "overworld": dimensionColor = 0xFF55FF55; break;
+                        case "the_nether": dimensionColor = 0xFFFF5555; break;
+                        case "the_end": dimensionColor = 0xFFFF55FF; break;
+                        default: dimensionColor = 0xA0A0A0; break;
                     }
                 }
                 String translationKey = "dimension." + playerDimension.replace(':', '.');

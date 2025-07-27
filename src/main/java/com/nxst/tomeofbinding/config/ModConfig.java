@@ -26,6 +26,7 @@ public class ModConfig {
     private static final String PLAYER_HISTORY_PREFIX = "playerHistory.";
     private static final Logger LOGGER = LogUtils.getLogger();
 
+    private static String remoteWorldId = null;
     private static Map<String, Set<String>> playerHistoryByWorld = new HashMap<>();
     private static Map<String, Boolean> showCoordinatesMap = new HashMap<>();
     private static Map<String, Boolean> showDimensionMap = new HashMap<>();
@@ -113,11 +114,20 @@ public class ModConfig {
         return new File(configDir, MOD_CONFIG_FOLDER + File.separator + CONFIG_FILE_NAME);
     }
 
+    public static void setRemoteWorldId(String worldId) {
+        if (worldId == null || worldId.trim().isEmpty() || worldId.equals(".") || worldId.equals("..")) {
+            LOGGER.warn("Tome of Binding: Received an invalid remote world ID: '{}'. Ignoring it.", worldId);
+            return;
+        }
+        remoteWorldId = worldId;
+        LOGGER.info("Tome of Binding: Remote world ID has been set to '{}'", remoteWorldId);
+    }
+
     private static String getCurrentWorldId() {
         Minecraft mc = Minecraft.getInstance();
-        ServerData serverData = mc.getCurrentServer();
-        if (serverData != null) {
-            return serverData.ip.replace(":", "_");
+
+        if (mc.getCurrentServer() != null) {
+            return remoteWorldId != null ? remoteWorldId : "connecting_world";
         }
 
         MinecraftServer integratedServer = mc.getSingleplayerServer();

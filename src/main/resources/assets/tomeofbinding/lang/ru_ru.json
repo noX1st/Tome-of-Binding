@@ -27,5 +27,16 @@
   "gui.tome.show_player_dimension": "Показывать измерение игрока",
   "gui.tome.my_info": "Моя информация",
   "gui.tome.share_my_coordinates": "Поделиться моими координатами",
-  "gui.tome.share_my_dimension": "Поделиться моим измерением"
+  "gui.tome.share_my_dimension": "Поделиться моим измерением",
+  "gui.tome.tooltip.show_search": "Показать строку поиска",
+  "gui.tome.tooltip.hide_search": "Скрыть строку поиска",
+  "gui.tome.tooltip.show_coords": "Показать координаты игроков",
+  "gui.tome.tooltip.hide_coords": "Скрыть координаты игроков",
+  "gui.tome.tooltip.show_offline": "Показать оффлайн игроков",
+  "gui.tome.tooltip.hide_offline": "Скрыть оффлайн игроков",
+  "gui.tome.tooltip.light_theme": "Включить светлую тему",
+  "gui.tome.tooltip.dark_theme": "Включить темную тему",
+  "gui.tome.tooltip.pin_player": "Закрепить игрока",
+  "gui.tome.tooltip.unpin_player": "Открепить игрока",
+  "gui.tome.tooltip.player_settings": "Настройки игрока"
 }
